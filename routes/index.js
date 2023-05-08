@@ -7,12 +7,10 @@ router.use((req, res, next) => {
     next();
 })
 
-// check to see if user logged in
-// TO DO
-
 router.use("/login", require('./login'));
 router.use("/login/signup", require('./login'));
 router.use("/login/:userId/notes", require('./notes'));
+
 
 // capture errors when the transactionid is not valid
 // use an error handling middleware - put it last

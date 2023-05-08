@@ -17,7 +17,7 @@ module.exports.getUser = async (inputEmail) => {
 }
 
 module.exports.updateUserPassword = (userId, password) => {
-  return User.updateOne({ userId }, password);
+  return User.updateOne({ _id : userId , password});
 }
 
 module.exports.createUser = async (userObj) => {

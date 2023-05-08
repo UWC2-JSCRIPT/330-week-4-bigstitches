@@ -22,10 +22,16 @@ module.exports.makeTokenForUserId = async (userId) => {
 // Should be an async function that returns a userId string using the tokenString 
 // to get a Token record
 module.exports.getUserIdFromToken = async (tokenString) => {
-  return Token.findOne({tokenString}).lean();
+  // console.log('In find a user id for hte token'); // good to go, hitting this from my middleware isLoggedIn
+  const token = await Token.findOne({index : tokenString}).lean();
+  if (!token) {
+    return null;
+  } else {
+    return token.userId; // return example: new ObjectId("64593a635a1ba72d31e69ebd")
+  }
 }
 
 // an async function that deletes the corresponding Token record
 module.exports.removeToken = async (tokenString) => {
-  return Token.deleteOne({tokenString}).lean();
+  return Token.deleteOne({index : tokenString}).lean();
 }
