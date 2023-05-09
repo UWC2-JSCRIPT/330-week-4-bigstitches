@@ -16,8 +16,11 @@ module.exports.getUser = async (inputEmail) => {
   
 }
 
-module.exports.updateUserPassword = (userId, password) => {
-  return User.updateOne({ _id : userId , password});
+module.exports.updateUserPassword = async (userId, hashword) => {
+  // const updatedPassword = await User.updateOne({ _id : userId , password });
+  // why? need to investigate more the difference
+  const updatedPassword = await User.findByIdAndUpdate( userId, { password: hashword });
+  return updatedPassword;
 }
 
 module.exports.createUser = async (userObj) => {

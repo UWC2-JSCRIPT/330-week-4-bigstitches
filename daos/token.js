@@ -32,6 +32,24 @@ module.exports.getUserIdFromToken = async (tokenString) => {
 }
 
 // an async function that deletes the corresponding Token record
-module.exports.removeToken = async (tokenString) => {
-  return Token.deleteOne({index : tokenString}).lean();
+module.exports.removeToken = async (token) => {
+  // console.log("HEREREHREHRHERHER ", token);
+  return (await Token.deleteOne({index : token}).lean());
+  // return (await Token.deleteMany({index : tokenString}).lean());
 }
+
+// Let's try something else to pass the tests....
+// allow the user to stay logged in on other devices; only log the user out on 
+// the current device/session/token
+/*
+module.exports.removeToken = async (userId, token) => {
+  // return (await Token.deleteOne({index : token}).lean());
+  return (await Token.deleteOne({$and:[{_id : userId}, {index : token}]}).lean());
+}
+*/
+/*
+module.exports.removeToken = async (userId) => {
+  // return (await Token.deleteOne({index : token}).lean());
+  return (await Token.deleteOne({_id : userId}).lean());
+}
+*/

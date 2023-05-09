@@ -3,7 +3,8 @@ const router = Router();
 
 // anything that comes in on this route should use this file
 router.use((req, res, next) => {
-    // console.log(`${req.method} ${req.url} at ${new Date()}`);
+    const { email, password } = req.body
+    // console.log(`${req.method} ${req.url} ${email} ${password}`);
     next();
 })
 

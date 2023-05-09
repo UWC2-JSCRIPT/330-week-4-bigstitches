@@ -8,7 +8,6 @@ const tokenDAO = require('../daos/token');
 // coming in as a bearer token in the authorization header (i.e. req.headers.authorization = 
 // 'Bearer 1234abcd') and you will need to extract just the token text. Any route that says 
 // "If the user is logged in" should use this middleware function.
-// const isLoggedIn = async (req, res, next) => {
 router.use("/", async (req, res, next) => {
   // console.log('In isLoggedIn');
   const regex = /Bearer\s([\w\-]+)/;
@@ -17,7 +16,7 @@ router.use("/", async (req, res, next) => {
   if (!str) {
     res.status(401).send('Token not provided. Session not authenticated.');
   } else {
-    token = str.match(regex)[1] ?? token;
+    token = str.match(regex)[1];
     const tokenReturnedUserId = await tokenDAO.getUserIdFromToken(token);
     if (!tokenReturnedUserId) {
       res.status(401).send('Token does not exist. Session not authenticated.');
