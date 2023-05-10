@@ -12,10 +12,10 @@ router.post("/", isLoggedIn, hasNotes, async (req, res, next) => {
   };
   try {
     const noteCreated = await noteDAO.createNote(newNote);
-    console.log('note created: ', noteCreated);
+    // console.log('note created: ', noteCreated);
     res.status(200).json(noteCreated); 
   } catch(e) {
-    console.log('error', e);
+    // console.log('error', e);
     res.status(500).send(e.message);
   }
 });
@@ -25,14 +25,14 @@ router.get("/:id", isLoggedIn, async (req, res, next) => {
   try {
     req.note = await noteDAO.getNote(req.userId, req.params.id);
     if (!req.note) {
-      console.log(`No NoteID: ${req.note}`);
+      // console.log(`No NoteID: ${req.note}`);
       res.status(404).send('Note Id is not valid');
     } else {
-      console.log(`Good Note; userID:${req.userId}, note_id:${req.params.id}, note:${req.note.text}`);
+      // console.log(`Good Note; userID:${req.userId}, note_id:${req.params.id}, note:${req.note.text}`);
       res.status(200).json(req.note);
     }
   } catch (e) {
-    console.log(`ID caught something: ${e}`);
+    // console.log(`ID caught something: ${e}`);
     // ID caught something: CastError: Cast to ObjectId failed for value "123" (type string) at path "_id" for model "notes"
     res.status(400).send(`validateNoteId middleware error: ${e.message}`);
   }
