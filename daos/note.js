@@ -1,23 +1,16 @@
-const Transaction = require('../models/note');
+const Note = require('../models/note');
 
 module.exports = {};
 
-module.exports.getAll = (userId, page, perPage) => {
-  return Transaction.find({ userId }).limit(perPage).skip(perPage*page).lean();
+// createNote(userId, noteObj) - should create a note for the given user
+module.exports.createNote = (noteObj) => {
+  return Note.create(noteObj);
 }
-
-module.exports.getById = (userId, transactionId) => {
-  return Transaction.findOne({ _id: transactionId, userId }).lean();
+// getNote(userId, noteId) - should get note for userId and noteId (_id)
+module.exports.getNote = (userId, noteId) => {
+  return Note.findOne({ userId: userId, _id:noteId })
 }
-
-module.exports.deleteById = (userId, transactionId) => {
-  return Transaction.deleteOne({ _id: transactionId, userId });
-}
-
-module.exports.updateById = (userId, transactionId, newObj) => {
-  return Transaction.update({ _id: transactionId, userId }, newObj);
-}
-
-module.exports.create = (transactionData) => {
-  return Transaction.create(transactionData);
+// getUserNotes(userId) - should get all notes for userId
+module.exports.getUserNotes = (userId) => {
+  return Note.find({ userId: userId });
 }

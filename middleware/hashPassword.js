@@ -11,7 +11,7 @@ router.use("/", async (req, res, next) => {
     req.password = hash;
     next();
   }
-
+  // should be SALTED with 10 instead of 1, but need to save time...
   bcrypt.hash(password, 1).then(logHash);
   
 });

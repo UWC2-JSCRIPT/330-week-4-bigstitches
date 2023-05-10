@@ -3,14 +3,15 @@ const router = Router();
 
 // anything that comes in on this route should use this file
 router.use((req, res, next) => {
-    const { email, password } = req.body
-    // console.log(`${req.method} ${req.url} ${email} ${password}`);
+    //const { text } = req.body
+    //console.log(`${req.method} ${req.url} ${text}`);
     next();
-})
+});
 
+router.use("/notes", require('./notes'));
+router.use("/notes/:id", require('./notes'));
 router.use("/login", require('./login'));
 router.use("/login/signup", require('./login'));
-router.use("/login/:userId/notes", require('./notes'));
 
 
 // capture errors when the transactionid is not valid

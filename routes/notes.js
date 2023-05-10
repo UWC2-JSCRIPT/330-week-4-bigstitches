@@ -1,112 +1,51 @@
-/*
-- Notes (requires authentication)
-  - Create: `POST /notes`
-  - Get all of my notes: `GET /notes`
-  - Get a single note: `GET /notes/:id`
-*/
 const { Router } = require("express");
-const router = Router({ mergeParams: true });
+const noteDAO = require('../daos/note');
+const isLoggedIn = require('../middleware/isLoggedIn');
+const hasNotes = require('../middleware/hasNotes');
+const router = Router();
 
-// const transactionDAO = require('../daos/transaction');
-const userDAO = require('../daos/user');
-
-/*
-router.use(async (req, res, next) => {
-  const { userId } = req.params;
-  // this isn't in a trycatch so invalid issues will throw mongo errors
-  // i.e id needs to be valid, but we can handle it if it's not in use 
-  // with the !user statement
+// Create `POST /notes`
+router.post("/", isLoggedIn, hasNotes, async (req, res, next) => {
+  const newNote = {
+    "userId": req.userId,
+    "text": req.text
+  };
   try {
-    const user = await userDAO.getById(userId);
-    if (!user) {
-      res.status(404).send('User not found');
-    } else {
-      req.user = user;
-      next();
-    }
+    const noteCreated = await noteDAO.createNote(newNote);
+    console.log('note created: ', noteCreated);
+    res.status(200).json(noteCreated); 
   } catch(e) {
-    // this will go to the error function in index
-    next(e);
-  }
-  
-})
-
-// Create
-router.post("/", async (req, res, next) => {
-  const userId = req.params.userId;
-  const transaction = req.body;
-  //transaction.userId = userId;
-  if (!transaction || JSON.stringify(transaction) === '{}' ) {
-    res.status(400).send('transaction is required');
-  } else {
-    try {
-      //const savedtransaction = await transactionDAO.create(transaction);
-      //res.json(savedtransaction); 
-    } catch(e) {
-      res.status(500).send(e.message);
-    }
+    console.log('error', e);
+    res.status(500).send(e.message);
   }
 });
 
-// Read - single transaction
-router.get("/:id", async (req, res, next) => {
-  // const userId = req.params.userId;
-  const userId = req.user._id;
-  console.log(req.user);
+// Get a single note: `GET /notes/:id`
+router.get("/:id", isLoggedIn, async (req, res, next) => {
   try {
-    // const transaction = await transactionDAO.getById(userId, req.params.id);
-    // TODO populate user field in response with actual user data
-    if (transaction) {
-      res.json(transaction);
+    req.note = await noteDAO.getNote(req.userId, req.params.id);
+    if (!req.note) {
+      console.log(`No NoteID: ${req.note}`);
+      res.status(404).send('Note Id is not valid');
     } else {
-      res.sendStatus(404);
+      console.log(`Good Note; userID:${req.userId}, note_id:${req.params.id}, note:${req.note.text}`);
+      res.status(200).json(req.note);
     }
+  } catch (e) {
+    console.log(`ID caught something: ${e}`);
+    // ID caught something: CastError: Cast to ObjectId failed for value "123" (type string) at path "_id" for model "notes"
+    res.status(400).send(`validateNoteId middleware error: ${e.message}`);
+  }
+});
+
+//  Get all of my notes: `GET /notes`
+router.get("/", isLoggedIn, async (req, res, next) => {
+  try {
+    const note = await noteDAO.getUserNotes(req.userId);
+    res.status(200).json(note);
   } catch (e) {
     res.status(500).send(e.message);
   }
 });
-
-// Read - all transactions
-router.get("/", async (req, res, next) => {
-  // const userId = req.params.userId;
-  const userId = req.user._id;
-  console.log(req.user);
-  let { page, perPage } = req.query;
-  page = page ? Number(page) : 0;
-  perPage = perPage ? Number(perPage) : 10;
-  const transactions = await transactionDAO.getAll(userId, page, perPage);
-  res.json(transactions);
-});
-
-// Update
-router.put("/:id", async (req, res, next) => {
-  const userId = req.params.userId;
-  const transactionId = req.params.id;
-  const transaction = req.body;
-  transaction.userId = userId;
-  if (!transaction || JSON.stringify(transaction) === '{}' ) {
-    res.status(400).send('transaction is required"');
-  } else {
-    try {
-      const updatedtransaction = await transactionDAO.updateById(userId, transactionId, transaction);
-      res.json(updatedtransaction);
-    } catch (e) {
-      res.status(500).send(e.message);
-    }
-  }
-});
-
-// Delete
-router.delete("/:id", async (req, res, next) => {
-  const userId = req.params.userId;
-  const transactionId = req.params.id;
-  try {
-    await transactionDAO.deleteById(userId, transactionId);
-    res.sendStatus(200);
-  } catch(e) {
-    res.status(500).send(e.message);
-  }
-});
-*/
 
 module.exports = router;
